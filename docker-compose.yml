@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  database:
+    image: mongo
+    container_name: vmail-database
+    restart: always
+    ports: 
+      - 27017:27017
+
+  vmailapi:
+    image: vmailapi
+    container_name: vmail-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 8000:8000
+    depends_on: 
+      - database
