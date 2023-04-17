@@ -4,4 +4,5 @@ export const GraphQLConfig = {
   driver: ApolloDriver,
   autoSchemaFile: true,
   playground: true,
+  introspection: true,
 };
