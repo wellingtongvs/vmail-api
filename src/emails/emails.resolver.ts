@@ -21,6 +21,12 @@ export class EmailsResolver {
   }
 
   @Mutation(() => Email)
+  async sendEmail(@Args('id', { type: () => ID }) id: string) {
+    const sentEmail = await this.emailsService.sendEmail(id);
+    pubSub.publish('emailSent', sentEmail);
+  }
+
+  @Mutation(() => Email)
   async updateEmail(
     @Args('updateEmailInput') updateEmailInput: UpdateEmailInput,
   ) {
@@ -41,5 +47,12 @@ export class EmailsResolver {
   @Mutation(() => Email)
   async deleteEmail(@Args('id', { type: () => ID }) id: string) {
     return this.emailsService.deleteEmail(id);
+  }
+
+  @Mutation(() => Email)
+  async trashEmail(@Args('id', { type: () => ID }) id: string) {
+    const trashedEmail = this.emailsService.trashEmail(id);
+    pubSub.publish('trashedEmail', trashedEmail);
+    return trashedEmail;
   }
 }
