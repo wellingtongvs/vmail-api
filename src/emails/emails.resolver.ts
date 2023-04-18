@@ -1,9 +1,17 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  Subscription,
+} from '@nestjs/graphql';
 import { EmailsService } from './emails.service';
 import { Email } from './entities/email.entity';
 import { CreateEmailInput } from './dto/create-email.input';
 import { UpdateEmailInput } from './dto/update-email.input';
 import { PubSub } from 'graphql-subscriptions';
+import { SubscriptionOutput } from './dto/subscription-draft-added.output';
 import { FindAllEmailsInput } from './dto/find-all-emails.input';
 import { FindAllEmailsOutput } from './dto/find-all-emails.output';
 
@@ -54,5 +62,28 @@ export class EmailsResolver {
     const trashedEmail = this.emailsService.trashEmail(id);
     pubSub.publish('trashedEmail', trashedEmail);
     return trashedEmail;
+  }
+
+  @Subscription(() => SubscriptionOutput, {
+    resolve: (payload) => payload,
+  })
+  @Subscription(() => Email)
+  async emailSent() {
+    return pubSub.asyncIterator('emailSent');
+  }
+
+  @Subscription(() => SubscriptionOutput, {
+    resolve: (payload) => payload,
+  })
+  @Subscription(() => Email)
+  async emailTrashed() {
+    return pubSub.asyncIterator('emailTrashed');
+  }
+
+  @Subscription(() => SubscriptionOutput, {
+    resolve: (payload) => payload,
+  })
+  emailDraftAdded() {
+    return pubSub.asyncIterator('emailDraftAdded');
   }
 }
