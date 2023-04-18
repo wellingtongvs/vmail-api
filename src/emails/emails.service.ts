@@ -70,6 +70,19 @@ export class EmailsService {
     return email;
   }
 
+  async sendEmail(id: string) {
+    const email = await this.findOne(id);
+
+    if (!email) {
+      throw new NotFoundException(`Email with ID ${id} not found`);
+    }
+
+    email.isDraft = false;
+    email.isSent = true;
+    const sentEmail = await this.emailRepository.save(email);
+    return sentEmail;
+  }
+
   async update(id: string, updateEmailInput: UpdateEmailInput) {
     const email = await this.findOne(id);
 
@@ -94,6 +107,19 @@ export class EmailsService {
     }
 
     const result = await this.emailRepository.delete(id);
+
+    return result;
+  }
+
+  async trashEmail(id: string) {
+    const email = await this.findOne(id);
+
+    if (!email) {
+      throw new NotFoundException(`Email with ID ${id} not found`);
+    }
+
+    email.isTrash = true;
+    const result = await this.emailRepository.save(email);
 
     return result;
   }
