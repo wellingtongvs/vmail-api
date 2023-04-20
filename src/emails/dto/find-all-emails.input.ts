@@ -1,7 +1,8 @@
 import { InputType, Int, Field, ID } from '@nestjs/graphql';
+import { Email } from '../entities/email.entity';
 
 @InputType()
-export class FindAllEmailsInput {
+export class FindAllEmailsInput extends Email {
   @Field({ nullable: true })
   sender: string;
 

@@ -1,17 +1,20 @@
-import { CreateEmailInput } from './create-email.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { Email } from '../entities/email.entity';
+import { InputType, Field } from '@nestjs/graphql';
 
 @InputType()
-export class UpdateEmailInput extends PartialType(CreateEmailInput) {
-  @Field()
+export class UpdateEmailInput extends Email {
+  @Field({ nullable: true })
   id: string;
 
-  @Field()
+  @Field({ nullable: true })
+  sender: string;
+
+  @Field({ nullable: true })
   recipient: string;
 
-  @Field()
+  @Field({ nullable: true })
   subject: string;
 
-  @Field()
+  @Field({ nullable: true })
   body: string;
 }

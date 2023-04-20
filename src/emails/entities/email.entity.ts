@@ -35,4 +35,16 @@ export class Email {
   @Column()
   @Field()
   isTrash: boolean;
+
+  @Column()
+  @Field()
+  createdAt: number;
+
+  @Column({ nullable: true })
+  @Field()
+  sentAt: number;
+
+  @Column()
+  @Field()
+  copyOwnerId: string;
 }

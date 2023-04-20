@@ -14,6 +14,7 @@ import { PubSub } from 'graphql-subscriptions';
 import { SubscriptionOutput } from './dto/subscription-draft-added.output';
 import { FindAllEmailsInput } from './dto/find-all-emails.input';
 import { FindAllEmailsOutput } from './dto/find-all-emails.output';
+import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 
 const pubSub = new PubSub();
 
@@ -23,28 +24,26 @@ export class EmailsResolver {
 
   @Mutation(() => Email)
   async createEmail(@Args('input') createEmailInput: CreateEmailInput) {
-    const draft = this.emailsService.create(createEmailInput);
-    pubSub.publish('emailDraftAdded', draft);
-    return draft;
+    return this.emailsService.create(createEmailInput);
   }
 
   @Mutation(() => Email)
   async sendEmail(@Args('id', { type: () => ID }) id: string) {
-    const sentEmail = await this.emailsService.sendEmail(id);
-    pubSub.publish('emailSent', sentEmail);
+    return this.emailsService.sendEmail(id);
   }
 
   @Mutation(() => Email)
   async updateEmail(
     @Args('updateEmailInput') updateEmailInput: UpdateEmailInput,
   ) {
-    return this.emailsService.update(`updateEmailInput.id`, updateEmailInput);
+    return this.emailsService.update(updateEmailInput.id, updateEmailInput);
   }
 
-  @Query(() => FindAllEmailsOutput, { name: 'emails' })
+  @IsPublicRoute()
+  @Query(() => [Email], { name: 'emails' })
   async findAll(@Args('filters') filters: FindAllEmailsInput) {
-    const response = await this.emailsService.findAll(filters);
-    return response;
+    const paginatedEmails = await this.emailsService.findAll(filters);
+    return paginatedEmails.emails;
   }
 
   @Query(() => Email, { name: 'email' })
@@ -59,9 +58,7 @@ export class EmailsResolver {
 
   @Mutation(() => Email)
   async trashEmail(@Args('id', { type: () => ID }) id: string) {
-    const trashedEmail = this.emailsService.trashEmail(id);
-    pubSub.publish('trashedEmail', trashedEmail);
-    return trashedEmail;
+    return this.emailsService.trashEmail(id);
   }
 
   @Subscription(() => SubscriptionOutput, {
