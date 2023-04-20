@@ -1,7 +1,8 @@
 import { ApolloDriver } from '@nestjs/apollo';
 
-export const GraphQLConfig = {
+export const graphQLConfig = {
   driver: ApolloDriver,
+  context: ({ req }) => ({ req }),
   autoSchemaFile: true,
   playground: true,
   introspection: true,
